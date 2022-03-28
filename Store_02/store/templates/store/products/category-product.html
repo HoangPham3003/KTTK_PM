@@ -1,0 +1,53 @@
+{% extends '../base.html' %}
+{% block title %}Category book{% endblock %}
+
+{% block content %}
+    <h1 class='text-center'>All {{ Category }}</h1>
+    <table class="table table-bordered border-dark table-hover shadow-sm mx-auto mt-5 align-middle w-50">
+        <thead>
+        <tr class="text-center table-primary border-primary">
+            <th scope="col">Product code</th>
+            {% if Category == "Books" %}
+                <th scope="col">Title</th>
+            {% else %}
+                <th scope="col">Name</th>
+            {% endif %}
+
+            {% if Category == "Books" %}
+                <th scope="col">Author</th>
+            {% elif Category == "Clothes" %}
+                <th scope="col">Origin</th>
+            {% else %}
+                <th scope="col">Manufacturer</th>
+            {% endif %}
+            <th scope="col">Price</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody id="books">
+            {% for x in data %}
+                <tr>
+                    <td class='text-center'>{{ x.code }}</td>
+
+                    {% if x.category_id == 1 %}
+                        <td>{{ x.title }}</td>
+                    {% else %}
+                        <td>{{ x.name }}</td>
+                    {% endif %}
+
+                    {% if x.category_id == 1 %}
+                        <td>{{ x.author }}</td>
+                    {% elif x.category_id == 3 %}
+                        <td>{{ x.origin }}</td>
+                    {% else %}
+                        <td>{{ x.manufacturer }}</td>
+                    {% endif %}
+
+                    <td>{{ x.price }}</td>
+                    <td class='text-center'><a class="btn btn-primary" type="button" href="http://{{ request.get_host }}/product/&category={{ Category }}&code={{ x.code }}">Xem</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

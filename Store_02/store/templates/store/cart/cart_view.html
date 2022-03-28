@@ -1,0 +1,55 @@
+{% extends '../base.html' %}
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Shopping cart</h1>
+    {% if data|length > 0 %}
+    <table id="table-cart" class="table table-bordered border-dark table-hover shadow-sm mx-auto mt-5 align-middle w-75">
+        <tbody id="books" class="border-primary">
+            {% for x in data %}
+                <tr>
+                    <td class="text-center fw-bold">*</td>
+                    <td class='text-center'>{{ x.code }}</td>
+                    <td>{{ x.title }}{{ x.name }}</td>
+                    <td>{{ x.author }}{{ x.origin }}{{ x.manufacturer }}</td>
+                    <td>{{ x.category }}</td>
+                    <td>{{ x.price }}</td>
+                    <td class="text-center">
+                        <button onclick="del_item('{{ x.category }}-{{ x.code }}', this)" value="{{ x.category }}-{{ x.code }}" class='btn btn-outline-primary shadow-sm fw-bold'>Del</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="5" class="text-center fw-bold">Total:</td>
+                <td colspan="2" class="fw-bold" id="total-cost">{{ total_cost }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="btn-checkout-container" class="w-75 mx-auto">
+        <a class="btn btn-primary float-end" role="button" href="http://{{ request.get_host }}/order/checkout">Check out</a>
+    </div>
+    {% endif %}
+
+    <script>
+        function del_item(s, el) {
+            var element = el;
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var data = JSON.parse(this.responseText);
+                    document.getElementById("cart-counter").innerText = "" + data.cart_counter;
+                    document.getElementById("total-cost").innerText = "" + data.total_cost;
+                    element.parentElement.parentElement.remove();
+                    if (data.cart_counter === 0) {
+                        document.getElementById("btn-checkout-container").remove();
+                        document.getElementById("table-cart").remove();
+                    }
+                    alert(data.message);
+                }
+            };
+            xmlhttp.open("POST", '{% url "cart:cart_del" %}', true);
+            xmlhttp.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8', '');
+            xmlhttp.send("csrfmiddlewaretoken="+"{{ csrf_token }}"+"&data="+s);
+        }
+    </script>
+{% endblock %}

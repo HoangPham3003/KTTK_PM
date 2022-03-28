@@ -1,0 +1,126 @@
+{% extends '../base.html' %}
+{% block title %}Order checkout{% endblock %}
+
+{% block paypalsdk %}
+    <script src="https://www.paypal.com/sdk/js?client-id=Ae4K1OYG1HSMcQ0hTRFZfFaiYTOQka-k_-b6_Z6VzVAbQgAG5OKxwK7EjnNaD9UxBCnnanb0YuQjQQ-w&currency=USD"></script>
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Order checking out</h1>
+    <div class="bg-light w-50 p-5 m-auto mb-5 rounded shadow d-flex">
+        {% csrf_token %}
+        <div class="w-75 mx-auto">
+            <div class="form-group mb-3">
+                <label for="fname" class="fs-5 fw-bold">Full name</label>
+                <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                    <div class="input-group-text">
+                        <i class="bi bi-file-text-fill"></i>
+                    </div>
+                    <input type="text" name="fname" id="fname" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" placeholder="Nhập họ và tên" required>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="email" class="fs-5 fw-bold">Email</label>
+                <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                    <div class="input-group-text">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <input type="email" name="email" id="email" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" placeholder="Nhập email" required>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="address" class="fs-5 fw-bold">Address</label>
+                <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                    <div class="input-group-text">
+                        <i class="bi bi-file-text-fill"></i>
+                    </div>
+                    <input type="text" name="address" id="address" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" placeholder="Nhập địa chỉ" required>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="phone" class="fs-5 fw-bold">Phone</label>
+                <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                    <div class="input-group-text">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                    <input type="text" name="phone" id="phone" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" placeholder="Nhập số điện thoại" required>
+                </div>
+            </div>
+            <div>
+                <p class="fs-5"><span class="fw-bold">Total cost (VND): </span>{{ total_cost_vnd }}</p>
+                <p class="fs-5"><span class="fw-bold">Total cost (USD): </span>{{ total_cost_usd }}</p>
+            </div>
+
+            <div id="message_container" class="alert alert-warning d-flex align-items-center visually-hidden" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-3"></i><span id="message"></span>
+            </div>
+
+            <button id="btn-checkout" onclick="checkout()" class="btn btn-outline-danger btn-lg w-100 shadow-sm my-1">Check out</button>
+
+            <div id="paypal-button-container" class="visually-hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        function checkout() {
+            var fname = document.getElementById('fname').value;
+            var email = document.getElementById('email').value;
+            var address = document.getElementById('address').value;
+            var phone = document.getElementById('phone').value;
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var data = JSON.parse(this.responseText);
+                    if (data.error != null) {
+                        document.getElementById('message').innerText = data.error;
+                        document.getElementById('message_container').classList.remove('visually-hidden');
+                    }
+                    else if (data.message != null) {
+                        document.getElementById('message').innerText = data.message;
+                        document.getElementById('message_container').classList.remove('alert-warning');
+                        document.getElementById('message_container').classList.add('alert-success');
+                        document.getElementById('paypal-button-container').classList.remove('visually-hidden');
+                        document.getElementById('btn-checkout').classList.add('visually-hidden');
+                    }
+                }
+            };
+            xmlhttp.open("POST", '{% url "order:order_checkout" %}', true);
+            xmlhttp.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xmlhttp.send("csrfmiddlewaretoken="+"{{ csrf_token }}"+"&fname="+fname+"&email="+email+"&address="+address+"&phone="+phone);
+        }
+
+
+        paypal.Buttons({
+
+        // Sets up the transaction when a payment button is clicked
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                    value: "{{ total_cost_usd }}" // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction after payer approval
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+                window.location.replace('{% url "order:order_success" %}');
+                // Successful capture! For dev/demo purposes:
+                // console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                // var transaction = orderData.purchase_units[0].payments.captures[0];
+                // alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+
+                // When ready to go live, remove the alert and show a success message within this page. For example:
+                // var element = document.getElementById('paypal-button-container');
+                // element.innerHTML = '';
+                // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                // Or go to another URL:  actions.redirect('thank_you.html');
+            });
+        }
+        }).render('#paypal-button-container');
+
+    </script>
+{% endblock %}

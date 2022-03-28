@@ -1,0 +1,62 @@
+{% extends '../base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    {% if Category == "Books" %}
+        <h1 class="text-center text-uppercase">{{ item.title }}</h1>
+    {% else %}
+        <h1 class="text-center text-uppercase">{{ item.name }}</h1>
+    {% endif %}
+
+    <div class="m-auto w-25">
+        <div class="card shadow my-3">
+            <div class="card-header text-center fw-bold text-primary">
+                <p class="card-text fw-bold fs-4">Information</p>
+            </div>
+            <div class="card-body">
+                <p class="card-text"><span class='fw-bold'>Product code: </span>{{ item.code }}</p>
+                {% if Category == "Books" %}
+                    <p class="card-text"><span class='fw-bold'>Title: </span>{{ item.title }}</p>
+                {% else %}
+                    <p class="card-text"><span class='fw-bold'>Name: </span>{{ item.name }}</p>
+                {% endif %}
+
+                {% if Category == "Books" %}
+                    <p class="card-text"><span class='fw-bold'>Author: </span>{{ item.author }}</p>
+                {% elif Category == "Clothes" %}
+                    <p class="card-text"><span class='fw-bold'>Origin: </span>{{ item.origin }}</p>
+                {% else %}
+                    <p class="card-text"><span class='fw-bold'>Manufacturer: </span>{{ item.manufacturer }}</p>
+                {% endif %}
+
+                <p class="card-text"><span class='fw-bold'>Category: </span>{{ item.category }}</p>
+                <p class="card-text"><span class='fw-bold'>Description: </span>{{ item.description }}</p>
+            </div>
+            <div class="card-footer text-center">
+                <p class="card-text"><span class='fw-bold'>Price: </span>{{ item.price }} VND</p>
+                <button id="btn_add_cart" value="{{ item.category }}-{{ item.code }}" class='btn btn-outline-primary w-50 shadow-sm fw-bold'>Add to cart</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).on('click', '#btn_add_cart', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart:cart_add" %}',
+                data: {
+                    item: $('#btn_add_cart').val(),
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    action: 'post'
+                },
+                success: function(result) {
+                    $('#cart-counter').text(""+result.cart_counter);
+                    alert(result.message);
+                },
+                error: function (xhr, errmsg, err) {}
+            });
+        });
+    </script>
+
+{% endblock %}
