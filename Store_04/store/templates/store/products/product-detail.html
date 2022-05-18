@@ -27,6 +27,27 @@
                         <p class="card-text"><span class='fw-bold'>Category: </span>{{ data_item.book_info.category }}</p>
                         <p class="card-text"><span class='fw-bold'>Description: </span>{{ data_item.book_info.description }}</p>
                     {% endif %}
+                    {% if Product_type == "Laptops" %}
+                        <p class="card-text"><span class='fw-bold'>Product code: </span>{{ data_item.laptop_info.code }}</p>
+                        <p class="card-text"><span class='fw-bold'>Name: </span>{{ data_item.laptop_info.name }}</p>
+                        <p class="card-text"><span class='fw-bold'>Producer: </span>{{ data_item.laptop_info.producer.name }}</p>
+                        <p class="card-text"><span class='fw-bold'>Type: </span>{{ data_item.laptop_info.type.name }}</p>
+                        <p class="card-text"><span class='fw-bold'>CPU: </span>{{ data_item.laptop_info.cpu }}</p>
+                        <p class="card-text"><span class='fw-bold'>RAM: </span>{{ data_item.laptop_info.ram }}</p>
+                        <p class="card-text"><span class='fw-bold'>Size screen (inch): </span>{{ data_item.laptop_info.size_screen }}</p>
+                        <p class="card-text"><span class='fw-bold'>In stock: </span>{{ data_item.laptop_info.quantity }}</p>
+                        <p class="card-text"><span class='fw-bold'>Description: </span>{{ data_item.laptop_info.description }}</p>
+                    {% endif %}
+                    {% if Product_type == "Clothes" %}
+                        <p class="card-text"><span class='fw-bold'>Product code: </span>{{ data_item.clothes_info.code }}</p>
+                        <p class="card-text"><span class='fw-bold'>Name: </span>{{ data_item.clothes_info.name }}</p>
+                        <p class="card-text"><span class='fw-bold'>Manufacturer: </span>{{ data_item.clothes_info.manufacturer.name }}</p>
+                        <p class="card-text"><span class='fw-bold'>Style: </span>{{ data_item.clothes_info.style.name }}</p>
+                        <p class="card-text"><span class='fw-bold'>Color: </span>{{ data_item.clothes_info.color }}</p>
+                        <p class="card-text"><span class='fw-bold'>Size: </span>{{ data_item.clothes_info.size }}</p>
+                        <p class="card-text"><span class='fw-bold'>In stock: </span>{{ data_item.clothes_info.quantity }}</p>
+                        <p class="card-text"><span class='fw-bold'>Description: </span>{{ data_item.clothes_info.description }}</p>
+                    {% endif %}
                 </div>
                 <div class="card-footer text-center">
                     <p class="card-text text-decoration-line-through"><span class='fw-bold'>Old price: </span>{{ data_item.item_in_sale.price_in_sale }} VND</p>

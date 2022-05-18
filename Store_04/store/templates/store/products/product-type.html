@@ -15,7 +15,7 @@
         <tbody id="books">
             {% for x in data_products %}
                 <tr>
-                    <td class='text-center'>{{ x.book }}</td>
+                    <td class='text-center'>{{ x.book }}{{ x.laptop }}{{ x.clothes }}</td>
                     <td class='text-center'>{{ x.price_in_sale }}</td>
                     <td class='text-center'>{{ x.discount }}%</td>
                     <td class='text-center'><a class="btn btn-primary" type="button" href="http://{{ request.get_host }}/product/&Ptype={{ Product_type }}&id_item={{ x.id }}">Detail</a></td>

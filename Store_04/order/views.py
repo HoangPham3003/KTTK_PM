@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 
 from customer.models import Customer, Account, Fullname, Address
-from cart.models import Cart, CartBookItem
+from cart.models import Cart, CartBookItem, CartLaptopItem, CartClothesItem
 from .models import Order, OrderItem, Shipment, Payment
 
 # Create your views here.
@@ -52,7 +52,7 @@ def order_checkout(request):
             'total_cost_usd': f"{total_cost_usd}"
         }
         if "data_order" in request.session:
-            del request.session['data_order']
+            request.session['data_order'] = None
         request.session['data_order'] = data_order
 
         # Check validation of user input
@@ -111,7 +111,10 @@ def order_success(request):
     account = Account.objects.get(username=customer_usn)
     customer = Customer.objects.get(account=account)
     cart = Cart.objects.get(customer=customer)
+
     cart_book_item = CartBookItem.objects.filter(cart=cart)
+    cart_laptop_item = CartLaptopItem.objects.filter(cart=cart)
+    cart_clothes_item = CartClothesItem.objects.filter(cart=cart)
 
     # Create order object
     new_order = Order(customer=customer, cart=cart)
@@ -137,9 +140,23 @@ def order_success(request):
         new_order_item = OrderItem(order=new_order, product_type=product_type, item_id=item_id)
         new_order_item.save()
 
+    for cart_item in cart_laptop_item:
+        product_type = "Laptops"
+        item_id = cart_item.laptop_item.id
+        new_order_item = OrderItem(order=new_order, product_type=product_type, item_id=item_id)
+        new_order_item.save()
+
+    for cart_item in cart_clothes_item:
+        product_type = "Clothes"
+        item_id = cart_item.clothes_item.id
+        new_order_item = OrderItem(order=new_order, product_type=product_type, item_id=item_id)
+        new_order_item.save()
+
     # Delete temp data
-    del request.session['data_order']
+    request.session['data_order'] = None
     cart_book_item.delete()
+    cart_laptop_item.delete()
+    cart_clothes_item.delete()
 
     message = "Order successfully!!!"
     return render(request, 'order/order_success.html', {'data_auth': data_auth, 'message': message})

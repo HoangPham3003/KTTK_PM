@@ -22,13 +22,13 @@
                 <tr>
                     <td class="text-center fw-bold">*</td>
                     <td class='text-center'>{{ x.code }}</td>
-                    <td class='text-center'>{{ x.title }}</td>
+                    <td class='text-center'>{{ x.name }}</td>
                     <td>{{ x.old_price }}</td>
                     <td>{{ x.discount }}%</td>
                     <td>{{ x.new_price }}</td>
                     <td>{{ x.quantity }}</td>
                     <td class="text-center">
-                        <button onclick="del_item('{{ Product_type }}-{{ x.id_in_cart }}', this)" value="{{ x.category }}-{{ x.code }}" class='btn btn-outline-primary shadow-sm fw-bold'>Del</button>
+                        <button onclick="del_item('{{ x.product_type }}-{{ x.id_in_cart }}', this)" value="{{ x.category }}-{{ x.code }}" class='btn btn-outline-primary shadow-sm fw-bold'>Del</button>
                     </td>
                 </tr>
             {% endfor %}

@@ -6,7 +6,7 @@ from .models import Order, OrderItem, Shipment, Payment
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'date_time_created', 'order_completed']
+    list_display = ['id', 'customer', 'date_time_created', 'order_completed']
     list_filter = ['order_completed', 'customer']
 
 
