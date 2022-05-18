@@ -1,0 +1,75 @@
+{% extends '../base.html' %}
+{% block title %}Product detail{% endblock %}
+
+{% block content %}
+    {% if Product_type == "Books" %}
+        <h1 class="text-center text-uppercase">{{ data_item.book_info.title }}</h1>
+    {% else %}
+        <h1 class="text-center text-uppercase">{{ item.name }}</h1>
+    {% endif %}
+
+    <div class="d-flex">
+        <div class="w-50">
+            <div class="card shadow my-3">
+                <div class="card-header text-center fw-bold text-primary">
+                    <p class="card-text fw-bold fs-4">Information</p>
+                </div>
+                <div class="card-body">
+                    {% if Product_type == "Books" %}
+                        <p class="card-text"><span class='fw-bold'>Product code: </span>{{ data_item.book_info.code }}</p>
+                        <p class="card-text"><span class='fw-bold'>Title: </span>{{ data_item.book_info.title }}</p>
+                        <p class="card-text"><span class='fw-bold'>Author: </span>{{ data_item.book_info.author.fullname }}</p>
+                        <p class="card-text"><span class='fw-bold'>Language: </span>{{ data_item.book_info.language }}</p>
+                        <p class="card-text"><span class='fw-bold'>Number of page: </span>{{ data_item.book_info.number_of_page }}</p>
+                        <p class="card-text"><span class='fw-bold'>Date publish: </span>{{ data_item.book_info.date_publish }}</p>
+                        <p class="card-text"><span class='fw-bold'>In stock: </span>{{ data_item.book_info.quantity }}</p>
+                        <p class="card-text"><span class='fw-bold'>Publisher: </span>{{ data_item.book_info.publisher }}</p>
+                        <p class="card-text"><span class='fw-bold'>Category: </span>{{ data_item.book_info.category }}</p>
+                        <p class="card-text"><span class='fw-bold'>Description: </span>{{ data_item.book_info.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <p class="card-text text-decoration-line-through"><span class='fw-bold'>Old price: </span>{{ data_item.item_in_sale.price_in_sale }} VND</p>
+                    <p class="card-text text-danger"><span class='fw-bold'>New price: </span>{{ data_item.official_price }} VND</p>
+                    <button id="btn_add_cart" value="{{ Product_type }}-{{ data_item.item_in_sale.id }}" class='btn btn-outline-primary w-50 shadow-sm fw-bold'>Add to cart</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-50">
+            <div class="card my-3">
+                <div class="card-header text-center fw-bold text-primary">
+                    <p class="card-text fw-bold fs-4">Comment</p>
+                </div>
+                <div class="card-body">
+                    {% for cmt in data_comment %}
+                        <div>
+                            <p class="card-text"><span class='fw-bold'>{{ cmt.customer.account }} ({{ cmt.comment_time }}): </span>{{ cmt.comment }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).on('click', '#btn_add_cart', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart:cart_add" %}',
+                data: {
+                    item: $('#btn_add_cart').val(),
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    action: 'post'
+                },
+                success: function(result) {
+                    $('#cart-counter').text(""+result.cart_counter);
+                    alert(result.message);
+                },
+                error: function (xhr, errmsg, err) {}
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends './base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block navbar %}
+    <a class="btn btn-primary btn" role="button" href="/">Home</a>
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Login</h1>
+
+    <form action="" method="post" class="bg-light w-50 p-5 m-auto mb-5 rounded shadow">
+        {% csrf_token %}
+        <div class="m-auto w-75">
+            {{ form }}
+            {% if error %}
+                <div id="message_container" class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-3"></i><span id="error">{{ error }}</span>
+                </div>
+            {% endif %}
+            <button type="submit" name="sumbit" class="btn btn-outline-danger w-100 btn-lg shadow-sm my-1">Login</button>
+        </div>
+    </form>
+{% endblock %}

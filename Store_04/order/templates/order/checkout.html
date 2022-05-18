@@ -1,0 +1,201 @@
+{% extends './base.html' %}
+{% block title %}Order checkout{% endblock %}
+
+{% block paypalsdk %}
+    <script src="https://www.paypal.com/sdk/js?client-id=Ae4K1OYG1HSMcQ0hTRFZfFaiYTOQka-k_-b6_Z6VzVAbQgAG5OKxwK7EjnNaD9UxBCnnanb0YuQjQQ-w&currency=USD"></script>
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Order checking out</h1>
+    <div class="d-flex">
+        <div class="bg-light w-50 p-5 mb-5">
+            {% csrf_token %}
+            <div class="w-75 mx-auto">
+                <h2 class="text-center">Customer</h2>
+                <div class="form-group mb-3">
+                    <label for="fname" class="fs-5 fw-bold">Full name</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.full_name }}" type="text" name="fname" id="fname" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" disabled>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="house_number" class="fs-5 fw-bold">House number</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.house_number }}" type="text" name="house_number" id="house_number" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="street" class="fs-5 fw-bold">Street</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.street }}" type="text" name="street" id="street" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="district" class="fs-5 fw-bold">District</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.district }}" type="text" name="district" id="district" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="city" class="fs-5 fw-bold">City</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.city }}" type="text" name="city" id="city" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="country" class="fs-5 fw-bold">Country</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.country }}" type="text" name="country" id="country" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="phone" class="fs-5 fw-bold">Phone</label>
+                    <div class="input-group input-group-lg w-100 shadow-sm mt-2">
+                        <div class="input-group-text">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <input value="{{ data_customer.phone }}" type="text" name="phone" id="phone" class="border border-danger border-top-0 border-end-0 border-start-0 form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-light w-50 p-5 mb-5">
+            <div class="w-75 mx-auto">
+                <h2 class="text-center">Shipment</h2>
+                <p class="text-center fw-bold">(50000 VND for urban Hanoi and 100000 VND for suburban Hanoi)</p>
+                <p class="text-center"><span class="fw-bold">Shipment price: </span><span id="shipment_price">{{ shipment_price }}</span> VND</p>
+            </div>
+
+            <div class="w-75 mx-auto">
+                <h2 class="text-center mt-5">Payment</h2>
+                <div class="form-check mx-auto">
+                    <input class="form-check-input" type="radio" name="payment" id="paypal" value="Paypal">
+                    <label class="form-check-label" for="paypal">
+                        Paypal
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="payment" id="cash" value="Cash" checked>
+                    <label class="form-check-label" for="cash">
+                        By cash
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <p class="fs-5"><span class="fw-bold">Product cost (VND): </span><span id="product_cost_vnd">{{ product_cost_vnd }}</span></p>
+                <p class="fs-5"><span class="fw-bold">Total cost (VND): </span><span id="total_cost_vnd">{{ total_cost_vnd }}</span></p>
+                <p class="fs-5"><span class="fw-bold">Total cost (USD): </span><span id="total_cost_usd">{{ total_cost_usd }}</span></p>
+            </div>
+
+            <div id="message_container" class="alert alert-warning d-flex align-items-center visually-hidden" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-3"></i><span id="message"></span>
+            </div>
+
+            <button id="btn-checkout" onclick="checkout()" class="btn btn-outline-danger btn-lg w-100 shadow-sm my-1">Check out</button>
+
+            <div id="paypal-button-container" class="visually-hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        function checkout() {
+            var fname = document.getElementById('fname').value;
+            var house_number = document.getElementById('house_number').value;
+            var street = document.getElementById('street').value;
+            var district = document.getElementById('district').value;
+            var city = document.getElementById('city').value;
+            var country = document.getElementById('country').value;
+            var phone = document.getElementById('phone').value;
+            var payment = $('input[name="payment"]:checked').val();
+
+            var product_cost_vnd = parseInt(document.getElementById('product_cost_vnd').innerHTML);
+            if (city !== "Hà Nội") {
+                document.getElementById('shipment_price').innerHTML = "100000";
+                var total_cost_vnd = product_cost_vnd + 100000;
+                var total_cost_usd = (total_cost_vnd / 22872).toFixed(2);
+                document.getElementById('total_cost_vnd').innerHTML = ""+total_cost_vnd;
+                document.getElementById('total_cost_usd').innerHTML = ""+total_cost_usd;
+            }
+            else {
+                document.getElementById('shipment_price').innerHTML = "50000";
+                total_cost_vnd = product_cost_vnd + 50000;
+                total_cost_usd = (total_cost_vnd / 22872).toFixed(2);
+                document.getElementById('total_cost_vnd').innerHTML = ""+total_cost_vnd;
+                document.getElementById('total_cost_usd').innerHTML = ""+total_cost_usd;
+            }
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var data = JSON.parse(this.responseText);
+                    if (data.error != null) {
+                        document.getElementById('message').innerText = data.error;
+                        document.getElementById('message_container').classList.remove('visually-hidden');
+                    }
+                    else if (data.message != null) {
+                        document.getElementById('message').innerText = data.message;
+                        document.getElementById('message_container').classList.remove('alert-warning');
+                        document.getElementById('message_container').classList.add('alert-success');
+                        document.getElementById('message_container').classList.remove('visually-hidden');
+                        if (payment === "Paypal") {
+                            document.getElementById('paypal-button-container').classList.remove('visually-hidden');
+                            document.getElementById('btn-checkout').classList.add('visually-hidden');
+                        }
+                        else {
+                            document.getElementById('btn-checkout').classList.add('visually-hidden');
+                            window.location.replace('{% url "order:order_success" %}');
+                        }
+                    }
+                }
+            };
+            xmlhttp.open("POST", '{% url "order:order_checkout" %}', true);
+            xmlhttp.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xmlhttp.send("csrfmiddlewaretoken="+"{{ csrf_token }}"+"&fname="+fname+"&house_number="+house_number+
+                "&street="+street+"&district="+district+"&city="+city+"&country="+country+"&phone="+phone+"&payment="+payment);
+        }
+
+
+        paypal.Buttons({
+
+        // Sets up the transaction when a payment button is clicked
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: document.getElementById("total_cost_usd").innerHTML // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction after payer approval
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+                window.location.replace('{% url "order:order_success" %}');
+            });
+        }
+        }).render('#paypal-button-container');
+
+    </script>
+{% endblock %}

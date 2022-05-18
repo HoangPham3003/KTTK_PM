@@ -1,0 +1,26 @@
+{% extends '../base.html' %}
+{% block title %}Product{% endblock %}
+
+{% block content %}
+    <h1 class='text-center'>{{ Product_type }}</h1>
+    <table class="table table-bordered border-dark table-hover shadow-sm mx-auto mt-5 align-middle w-50">
+        <thead>
+            <tr class="text-center table-primary border-primary">
+                <th scope="col">Name</th>
+                <th scope="col">Price in sale</th>
+                <th scope="col">Discount</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody id="books">
+            {% for x in data_products %}
+                <tr>
+                    <td class='text-center'>{{ x.book }}</td>
+                    <td class='text-center'>{{ x.price_in_sale }}</td>
+                    <td class='text-center'>{{ x.discount }}%</td>
+                    <td class='text-center'><a class="btn btn-primary" type="button" href="http://{{ request.get_host }}/product/&Ptype={{ Product_type }}&id_item={{ x.id }}">Detail</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
