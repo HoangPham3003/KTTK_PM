@@ -6,5 +6,29 @@
 {% endblock %}
 
 {% block content %}
-    <h1>This is signup page</h1>
+    <h1 class="text-center">Sign up</h1>
+
+    <form action="" method="post" class="bg-light w-75 p-5 m-auto mb-5 rounded shadow">
+        {% csrf_token %}
+        <div class="d-flex">
+            <div class="w-25 mx-5">
+                <h2 class="text-center">Account</h2>
+                {{ form_account }}
+            </div>
+            <div class="w-50 ms-5">
+                <h2 class="text-center">Information</h2>
+                {{ form_info }}
+            </div>
+        </div>
+        {% if error %}
+            <div id="message_container" class="w-50 mt-5 alert alert-warning d-flex align-items-center mx-auto" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-3"></i><span id="error">{{ error }}</span>
+            </div>
+        {% endif %}
+        <div class="d-flex justify-content-center">
+            <button type="submit" name="sumbit" class="btn btn-outline-danger w-50 btn-lg shadow-sm">Signup</button>
+        </div>
+    </form>
+
+
 {% endblock %}
