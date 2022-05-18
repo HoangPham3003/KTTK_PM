@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 
-from .forms import LoginForm, SignupFormAccount, SignupFormInformation
+from .forms import LoginForm, SignupFormAccount, SignupFormInformation, ChangePwdForm
 from .models import Customer, Account, Fullname, Address
 from cart.models import Cart
 
@@ -93,5 +93,41 @@ def signup(request):
         return render(request, 'customer/signup.html', {'form_account': form_account, 'form_info': form_info})
 
 
+def change_password(request):
+    data_auth = request.session['auth']
+    customer_usn = data_auth['username']
+    account = Account.objects.get(username=customer_usn)
+    old_pwd = account.password
+
+    if request.method == 'POST':
+        form = ChangePwdForm(request.POST)
+        if form.is_valid():
+            old_pwd_inp = form.cleaned_data['old_password'].strip()
+            new_pwd_inp = form.cleaned_data['new_password'].strip()
+            new_pwd_retyped_inp = form.cleaned_data['new_password_retyped'].strip()
+
+            if old_pwd_inp == "" or new_pwd_inp == "" or new_pwd_retyped_inp == "":
+                error = "Please enter information!"
+                form = ChangePwdForm()
+                return render(request, 'customer/change_password.html', {'data_auth': data_auth, 'form': form, 'error': error})
+            elif old_pwd_inp != old_pwd:
+                error = "Old password is wrong!"
+                form = ChangePwdForm()
+                return render(request, 'customer/change_password.html', {'data_auth': data_auth, 'form': form, 'error': error})
+            elif new_pwd_inp == old_pwd:
+                error = "New password must be different from old password!"
+                form = ChangePwdForm()
+                return render(request, 'customer/change_password.html', {'data_auth': data_auth, 'form': form, 'error': error})
+            elif new_pwd_inp != new_pwd_retyped_inp:
+                error = "New password retyped must be same as new password!"
+                form = ChangePwdForm()
+                return render(request, 'customer/change_password.html', {'data_auth': data_auth, 'form': form, 'error': error})
+            else:
+                account.password = new_pwd_retyped_inp
+                account.save()
+                return redirect("/customer/logout")
+    else:
+        form = ChangePwdForm()
+        return render(request, 'customer/change_password.html', {'data_auth': data_auth, 'form': form})
 
 
