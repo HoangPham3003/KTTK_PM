@@ -69,6 +69,10 @@
                         </div>
                     {% endfor %}
                 </div>
+                <div class="d-flex">
+                    <textarea id="text_comment" class="form-control" placeholder="Comment..." required></textarea>
+                    <button id="btn_comment" value="{{ Product_type }}-{{ data_item.item_in_sale.id }}" class='btn btn-outline-primary w-50 shadow-sm fw-bold'>Comment</button>
+                </div>
             </div>
         </div>
     </div>
@@ -88,6 +92,25 @@
                 success: function(result) {
                     $('#cart-counter').text(""+result.cart_counter);
                     alert(result.message);
+                },
+                error: function (xhr, errmsg, err) {}
+            });
+        });
+
+        $(document).on('click', '#btn_comment', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "store:add_comment" %}',
+                data: {
+                    item: $('#btn_comment').val(),
+                    comment: $('#text_comment').val(),
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    action: 'post'
+                },
+                success: function(result) {
+                    alert(result.message);
+                    location.reload();
                 },
                 error: function (xhr, errmsg, err) {}
             });

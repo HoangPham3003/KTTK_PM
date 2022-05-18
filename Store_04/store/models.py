@@ -24,21 +24,6 @@ class BookItem(models.Model):
         return f"{self.id}"
 
 
-class Comment(models.Model):
-    customer = models.ForeignKey(Customer, related_name='comment_customer', on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, related_name='comment_book', on_delete=models.CASCADE)
-    comment = models.TextField(blank=True)
-    comment_time = models.DateTimeField(auto_now_add=True)
-
-    objects = models.Manager()
-
-    class Meta:
-        verbose_name_plural = "Comment"
-
-    def __str__(self):
-        return f"{self.id}"
-
-
 class LaptopItem(models.Model):
     laptop = models.ForeignKey(Laptop, related_name='laptopitem_laptop', on_delete=models.CASCADE)
     price_in_sale = models.DecimalField(max_digits=8, decimal_places=0)
@@ -66,6 +51,54 @@ class ClothesItem(models.Model):
 
     class Meta:
         verbose_name_plural = "ClothesItem"
+
+    def __str__(self):
+        return f"{self.id}"
+
+
+class CommentBook(models.Model):
+    customer = models.ForeignKey(Customer, related_name='comment_book_customer', on_delete=models.CASCADE)
+    book_item = models.ForeignKey(BookItem, related_name='comment_book', on_delete=models.CASCADE)
+    comment = models.TextField(blank=True)
+    comment_time = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name_plural = "CommentBook"
+        ordering = ('-comment_time',)
+
+    def __str__(self):
+        return f"{self.id}"
+
+
+class CommentLaptop(models.Model):
+    customer = models.ForeignKey(Customer, related_name='comment_laptop_customer', on_delete=models.CASCADE)
+    laptop_item = models.ForeignKey(LaptopItem, related_name='comment_laptop', on_delete=models.CASCADE)
+    comment = models.TextField(blank=True)
+    comment_time = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name_plural = "CommentLaptop"
+        ordering = ('-comment_time',)
+
+    def __str__(self):
+        return f"{self.id}"
+
+
+class CommentClothes(models.Model):
+    customer = models.ForeignKey(Customer, related_name='comment_clothes_customer', on_delete=models.CASCADE)
+    clothes_item = models.ForeignKey(ClothesItem, related_name='comment_clothes', on_delete=models.CASCADE)
+    comment = models.TextField(blank=True)
+    comment_time = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name_plural = "CommentClothes"
+        ordering = ('-comment_time',)
 
     def __str__(self):
         return f"{self.id}"
