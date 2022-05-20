@@ -1,0 +1,26 @@
+{% extends './base_store.html' %}
+{% block title %}Change password{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Order detail</h1>
+    <table class="table table-bordered border-dark table-hover shadow-sm mx-auto mt-5 align-middle w-75">
+        <thead>
+            <tr class="text-center table-primary border-primary">
+                <th scope="col">Product code</th>
+                <th scope="col">Product name</th>
+                <th scope="col">Price</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody id="my_orders">
+            {% for x in data_order_items %}
+                <tr>
+                    <td class='text-center'>{{ x.product_code }}</td>
+                    <td class='text-center'>{{ x.product_name }}</td>
+                    <td class='text-center'>{{ x.real_price }}</td>
+                    <td class='text-center'><a class="btn btn-primary" type="button" href="http://{{ request.get_host }}/product/&Ptype={{ x.product_type }}&id_item={{ x.item_id }}">Detail</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

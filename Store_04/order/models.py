@@ -19,6 +19,7 @@ class Order(models.Model):
 
     class Meta:
         verbose_name_plural = "Order"
+        ordering = ('-date_time_created',)
 
     def __str__(self):
         return f"{self.id}"

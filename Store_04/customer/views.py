@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from .forms import LoginForm, SignupFormAccount, SignupFormInformation, ChangePwdForm
 from .models import Customer, Account, Fullname, Address
 from cart.models import Cart
+from order.models import Order, OrderItem, Shipment, Payment
+from store.models import BookItem, LaptopItem, ClothesItem
 
 # Create your views here.
 
@@ -131,3 +133,87 @@ def change_password(request):
         return render(request, 'customer/change_password.html', {'data_auth': data_auth, 'form': form})
 
 
+def my_orders(request):
+    data_auth = request.session['auth']
+
+    customer_usn = data_auth['username']
+    account = Account.objects.get(username=customer_usn)
+    customer = Customer.objects.get(account=account)
+
+    order_list = Order.objects.filter(customer=customer)
+
+    data_orders = []
+    for order in order_list:
+        order_id = order.id
+        datetime_created = order.date_time_created
+        status_order = order.order_completed
+        payment = Payment.objects.get(order=order)
+        total_cost = payment.total_cost
+        status_payment = payment.payment_completed
+        if status_order:
+            status_order = "Completed"
+        else:
+            status_order = "Uncompleted"
+        if status_payment:
+            status_payment = "Paid"
+        else:
+            status_payment = "Unpaid"
+        data = {
+            'order_id': order_id,
+            'datetime_created': datetime_created,
+            'status_order': status_order,
+            'status_payment': status_payment,
+            'total_cost': total_cost
+        }
+        data_orders.append(data)
+
+    return render(request, 'customer/my_orders.html', {'data_auth': data_auth, 'data_orders': data_orders})
+
+
+def order_detail(request, order_id):
+    data_auth = request.session['auth']
+
+    customer_usn = data_auth['username']
+    account = Account.objects.get(username=customer_usn)
+    customer = Customer.objects.get(account=account)
+
+    order = Order.objects.get(id=order_id)
+    order_items = OrderItem.objects.filter(order=order)
+
+    data_order_items = []
+    categories = {"Books": BookItem, 'Laptops': LaptopItem, 'Clothes': ClothesItem}
+    for order_item in order_items:
+        product_type = order_item.product_type
+        item_id = order_item.item_id
+        model = categories[product_type]
+        item = model.objects.get(id=item_id)
+
+        price_in_sale = int(item.price_in_sale)
+        discount = int(item.discount) / 100
+        real_price = int(price_in_sale - price_in_sale * discount)
+
+        product_code = ""
+        product_name = ""
+        if product_type == "Books":
+            product_code = item.book.code
+            product_name = item.book.title
+        elif product_type == "Laptops":
+            product_code = item.laptop.code
+            product_name = item.laptop.name
+        elif product_type == "Clothes":
+            product_code = item.clothes.code
+            product_name = item.clothes.name
+        data_item = {
+            "item_id": item_id,
+            "product_code": product_code,
+            "product_name": product_name,
+            "real_price": real_price,
+            "product_type": product_type
+        }
+        data_order_items.append(data_item)
+    return render(request, 'customer/order_detail.html', {'data_auth': data_auth, 'data_order_items': data_order_items})
+
+
+def profile(request):
+    data_auth = request.session['auth']
+    return render(request, 'customer/profile.html', {'data_auth': data_auth})
